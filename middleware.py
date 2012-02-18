@@ -12,6 +12,7 @@ import os
 import tempfile
 import django.db.models as models
 from django.conf import settings
+from django.core.exceptions import MiddlewareNotUsed
 try:
     import cStringIO as StringIO
 except:
@@ -132,6 +133,7 @@ class HotshotProfilerMiddleware(object):
 
         return response
 
+
 class CProfileProfilerMiddleware(object):
     def __init__(self):
         import cProfile
@@ -150,4 +152,34 @@ class CProfileProfilerMiddleware(object):
             self.profiler.print_stats(1)
             sys.stdout = old_stdout
             response.content = '<pre>%s</pre>' % out.getvalue()
+        return response
+
+
+# From: django-middleware-extras
+# adapted by: alanjds
+class PrettifyHTMLMiddleware(object):
+    """Middleware that prettifies HTML.
+
+    Add it last to the list of MIDDLEWARE_CLASSES:
+
+    MIDDLEWARE_CLASSES = (
+        ...
+        'lancero.middleware.PrettifyHTMLMiddleware'
+    )
+    """
+    def __init__(self):
+        try:
+            from BeautifulSoup import BeautifulSoup
+        except ImportError, e:
+            raise MiddlewareNotUsed('Not prettifying HTML: BeautifulSoup cannot be imported')
+
+    def process_response(self, request, response):
+        if 'text/html' in response['Content-Type']:
+            soup = BeautifulSoup(response.content)
+            try:
+                response.content = soup.prettify(spacesPerLevel=4)
+            except TypeError, e:    # not alanjds' flavor of Soup
+                # so, use official Soup flavor...
+                response.content = soup.prettify()
+
         return response
