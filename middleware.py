@@ -20,7 +20,7 @@ except:
 
 import logging
 logger = logging.getLogger().setLevel(logging.DEBUG)
-logger.name = 'themod.middleware'
+logger.name = 'lancero.middleware'
 
 import re
 words_re = re.compile( r'\s+' )
