@@ -19,7 +19,8 @@ except:
 
 
 import logging
-logger = logging.getLogger().setLevel(logging.DEBUG)
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 logger.name = 'lancero.middleware'
 
 import re
