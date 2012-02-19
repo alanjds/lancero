@@ -18,6 +18,10 @@ try:
 except:
     import StringIO
 
+try:
+    from BeautifulSoup import BeautifulSoup
+except ImportError, e:
+    pass
 
 import logging
 logger = logging.getLogger()
