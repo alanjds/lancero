@@ -10,6 +10,8 @@
 import sys
 import os
 import tempfile
+import hotshot, hotshot.stats
+import cProfile
 import django.db.models as models
 from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed
@@ -51,9 +53,6 @@ class HotshotProfilerMiddleware(object):
 
     WARNING: It uses hotshot profiler which is not thread safe.
     """
-    def __init__(self):
-        import hotshot, hotshot.stats
-
     def process_request(self, request):
         if (settings.DEBUG or (hasattr(request, 'user') and request.user.is_superuser)) and SHOW_PROFILE_MAGIC_KEY in request.GET:
             self.tmpfile = tempfile.mktemp()
@@ -139,9 +138,6 @@ class HotshotProfilerMiddleware(object):
 
 
 class CProfileProfilerMiddleware(object):
-    def __init__(self):
-        import cProfile
-
     def process_view(self, request, callback, callback_args, callback_kwargs):
         if settings.DEBUG and SHOW_PROFILE_MAGIC_KEY in request.GET:
             self.profiler = cProfile.Profile()
