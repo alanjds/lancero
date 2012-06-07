@@ -183,3 +183,16 @@ class PrettifyHTMLMiddleware(object):
                 response.content = soup.prettify()
 
         return response
+
+
+# From: http://djangosnippets.org/snippets/420/
+class ConsoleTracebackMiddleware:
+    def process_exception(self, request, exception):
+        import traceback
+        import sys
+        exc_info = sys.exc_info()
+        print "######################## Exception #############################"
+        print '\n'.join(traceback.format_exception(*(exc_info or sys.exc_info())))
+        print "################################################################"
+        #print repr(request)
+        #print "################################################################"
