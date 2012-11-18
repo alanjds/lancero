@@ -1,6 +1,7 @@
 #coding: utf-8
 from django.conf import settings
 from django.http import HttpResponseRedirect
+from django.contrib.auth import authenticate, login
 
 import base64
 from django.http import HttpResponse
@@ -25,19 +26,28 @@ class http_auth_required(object):
     A decorator to handle basic HTTP authentication. Takes a dictionary of
     username: password pairs to authenticate against.
     """
-    def __init__(self, credentials):
+    def __init__(self, credentials=None):
       self.credentials = credentials
 
     def __call__(self, view):
         def inner(request, *args, **kwargs):
             # header indicates login attempt
+            if request.user.is_authenticated():
+                return view(request, *args, **kwargs)
+
             if request.META.has_key('HTTP_AUTHORIZATION'):
                 auth = request.META['HTTP_AUTHORIZATION'].split()
                 if len(auth) == 2 and auth[0].lower() == 'basic':
                     username, password = base64.b64decode(auth[1]).split(':')
-                    if self.credentials.has_key(username) and self.credentials[username] == password:
-                        request.META['REMOTE_USER'] = username
-                        return view(request, *args, **kwargs)
+                    if self.credentials:
+                        if self.credentials.has_key(username) and self.credentials[username] == password:
+                            request.META['REMOTE_USER'] = username
+                            return view(request, *args, **kwargs)
+                    else:
+                        user = authenticate(username=username, password=password)
+                        if user is not None and user.is_active:
+                            login(request, user)
+                            return view(request, *args, **kwargs)
 
             # The credentials are incorrect, or not provided; challenge for username/password
             response = HttpResponse()
