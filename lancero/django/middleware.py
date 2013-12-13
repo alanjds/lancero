@@ -124,7 +124,7 @@ class HotshotProfilerMiddleware(object):
             stats_str = out.getvalue()
 
             if response and response.content and stats_str:
-                response.content = "<pre>" + stats_str + "</pre>"
+                response.content = "<html><pre>" + stats_str + "</pre></html>"
 
             response.content = "\n".join(response.content.split("\n")[:40])
 
@@ -151,7 +151,8 @@ class CProfileProfilerMiddleware(object):
             old_stdout, sys.stdout = sys.stdout, out
             self.profiler.print_stats(1)
             sys.stdout = old_stdout
-            response.content = '<pre>%s</pre>' % out.getvalue()
+            response.content = '<html><pre>%s</pre></html>' % out.getvalue()
+            response['Content-Type'] = 'text/html'
         return response
 
 
