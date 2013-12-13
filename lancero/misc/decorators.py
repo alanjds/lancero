@@ -57,3 +57,41 @@ try:
     async_process = Async(multiprocessing.Process)
 except ImportError:
     async_process = async_thread
+
+
+def synchronized(lock):
+    """ Synchronization decorator. """
+
+    def wrap(f):
+        def new_function(*args, **kw):
+            lock.acquire()
+            try:
+                return f(*args, **kw)
+            finally:
+                lock.release()
+        return new_function
+    return wrap
+
+
+class IsNotTheOneException(Exception):
+    message = 'This is not the only thread alive. So, got killed.'
+
+def synchronized_highlander(semaphore):
+    """ Synchronization decorator - highlander style:
+    
+    If the semaphore is red, the thread trying to acquire it is killed,
+    so only one thread will be alive for the semaphore.
+    """
+
+    def wrap(f):
+        def new_function(*args, **kw):
+            can_run = semaphore.acquire(False)
+            if can_run:
+                try:
+                    return f(*args, **kw)
+                finally:
+                    semaphore.release()
+            else:
+                raise IsNotTheOneException()
+        return new_function
+    return wrap
