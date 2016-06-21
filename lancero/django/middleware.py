@@ -10,7 +10,6 @@
 import sys
 import os
 import tempfile
-import hotshot, hotshot.stats
 import cProfile
 import django.db.models as models
 from django.conf import settings
@@ -21,8 +20,13 @@ except:
     import StringIO
 
 try:
+    import hotshot, hotshot.stats
+except ImportError:
+    pass
+
+try:
     from BeautifulSoup import BeautifulSoup
-except ImportError, e:
+except ImportError:
     pass
 
 import logging
