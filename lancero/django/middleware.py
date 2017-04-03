@@ -17,9 +17,12 @@ import django.db.models as models
 from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed
 try:
-    import cStringIO as StringIO
-except:
-    import StringIO
+    from cStringIO import StringIO
+except ImportError:
+    try:
+        from io import StringIO
+    except ImportError:
+        from StringIO import StringIO
 
 try:
     import hotshot, hotshot.stats
@@ -118,7 +121,7 @@ class HotshotProfilerMiddleware(object):
         if (settings.DEBUG or (hasattr(request, 'user') and request.user.is_superuser)) and SHOW_PROFILE_MAGIC_KEY in request.GET:
             self.prof.close()
 
-            out = StringIO.StringIO()
+            out = StringIO()
             old_stdout = sys.stdout
             sys.stdout = out
 
@@ -153,7 +156,7 @@ class CProfileProfilerMiddleware(object):
     def process_response(self, request, response):
         if settings.DEBUG and SHOW_PROFILE_MAGIC_KEY in request.GET:
             self.profiler.create_stats()
-            out = StringIO.StringIO()
+            out = StringIO()
             old_stdout, sys.stdout = sys.stdout, out
             self.profiler.print_stats(1)
             sys.stdout = old_stdout
