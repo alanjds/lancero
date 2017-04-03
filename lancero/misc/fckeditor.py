@@ -26,7 +26,7 @@ import os
 import re
 import string
 
-def escape(text, replace=string.replace):
+def escape(text, replace=str.replace):
     """Converts the special characters '<', '>', and '&'.
 
     RFC 1866 specifies that these characters be represented

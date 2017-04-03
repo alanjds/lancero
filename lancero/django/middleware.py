@@ -7,6 +7,8 @@
 # And then merged with http://www.djangosnippets.org/snippets/727/
 # by: alanjds
 
+from __future__ import print_function
+
 import sys
 import os
 import tempfile
@@ -175,7 +177,7 @@ class PrettifyHTMLMiddleware(object):
     def __init__(self):
         try:
             from BeautifulSoup import BeautifulSoup
-        except ImportError, e:
+        except ImportError as e:
             raise MiddlewareNotUsed('Not prettifying HTML: BeautifulSoup cannot be imported')
 
     def process_response(self, request, response):
@@ -183,7 +185,7 @@ class PrettifyHTMLMiddleware(object):
             soup = BeautifulSoup(response.content)
             try:
                 response.content = soup.prettify(spacesPerLevel=4)
-            except TypeError, e:    # not alanjds' flavor of Soup
+            except TypeError as e:    # not alanjds' flavor of Soup
                 # so, use official Soup flavor...
                 response.content = soup.prettify()
 
@@ -196,8 +198,8 @@ class ConsoleTracebackMiddleware:
         import traceback
         import sys
         exc_info = sys.exc_info()
-        print "######################## Exception #############################"
-        print '\n'.join(traceback.format_exception(*(exc_info or sys.exc_info())))
-        print "################################################################"
-        #print repr(request)
-        #print "################################################################"
+        print("######################## Exception #############################")
+        print('\n'.join(traceback.format_exception(*(exc_info or sys.exc_info()))))
+        print("################################################################")
+        #print(repr(request))
+        #print("################################################################")

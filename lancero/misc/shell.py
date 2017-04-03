@@ -133,7 +133,7 @@ class InteractiveCmd(object):
        command = '%s %s' %(self.cmd, ' '.join(args))
        result = Popen(command, stdout=PIPE, stderr=PIPE, shell=True)
        communication = result.communicate()
-       print communication[0]
+       print(communication[0])
        
        return communication
 

@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import sys
 import traceback
 
@@ -6,11 +8,11 @@ def console_debug(f):
     def x(*args, **kw):
         try:
             ret = f(*args, **kw)
-        except Exception, e:
-            print >> sys.stderr, "ERROR:", str(e)
+        except Exception as e:
+            print("ERROR:", str(e), file=sys.stderr)
             exc_type, exc_value, tb = sys.exc_info()
             message = "Type: %s\nValue: %s\nTraceback:\n\n%s" % (exc_type, exc_value, "\n".join(traceback.format_tb(tb)))
-            print >> sys.stderr, message
+            print(message, file=sys.stderr)
             raise
         else:
             return ret
